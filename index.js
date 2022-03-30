@@ -1,26 +1,36 @@
-function Block(letter, rate, used, father, code) {
-	this.letter = letter;
-	this.rate = rate;
-	this.used = used;
-	this.father = father;
-	this.code = code;
-}
+const Blockchain = require("./blockchain");
+const {send} = require("micro");
 
-function FindCode(block) {
+const blockchain = new Blockchain();
 
-	if (tree[block.father].code != '') {
-		block.code = tree[block.father].code + '1';
-	} 
-    else {
-		if (block.letter == tree[minIndex].letter) {
-			block.code = '0';
-		} 
-        else if (block.letter == tree[preminIndex].letter) {
-			block.code = '1';
-		} 
-        else {
-			FindCode(tree[block.father]);
-			block.code = tree[block.father].code + '0';
-		}
-	}
+module.exports = async (request, response) => {
+const route = request.url;
+
+// Keep track of the peers that have contacted us
+blockchain.addPeer(request.headers.host);
+
+let output;
+
+switch (route) {
+case "/new_block":
+output = blockchain.newBlock();
+break;
+
+case "/last_block":
+output = blockchain.lastBlock();
+break;
+
+case "/get_peers":
+output = blockchain.getPeers();
+break;
+
+case "/submit_transaction":
+output = blockchain.addTransaction(transaction);
+break;
+
+default:
+output = blockchain.lastBlock();
+
 }
+send(response, 200, output);
+};
